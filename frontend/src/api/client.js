@@ -8,7 +8,7 @@ const api = axios.create({
 let csrfToken = null;
 async function getCsrfToken() {
   if (!csrfToken) {
-    const res = await axios.get("/auth/csrf-token", { withCredentials: true });
+    const res = await api.get("/auth/csrf-token", { withCredentials: true });
     csrfToken = res.data?.csrfToken;
   }
   return csrfToken;
