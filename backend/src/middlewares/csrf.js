@@ -1,4 +1,7 @@
+
 import { doubleCsrf } from "csrf-csrf";
+
+const isProduction = process.env.NODE_ENV === "production";
 
 const {
   doubleCsrfProtection,
@@ -7,15 +10,14 @@ const {
 } = doubleCsrf({
   getSecret: () => process.env.CSRF_SECRET,
 
-  // Fixed identifier for local development/testing
   getSessionIdentifier: () => "pawhaven-local-session",
 
   cookieName: "pawhaven_csrf",
 
   cookieOptions: {
     httpOnly: false,
-    sameSite: "lax",
-    secure: false,
+    sameSite: isProduction ? "none" : "lax",
+    secure: isProduction,
     path: "/",
   },
 
