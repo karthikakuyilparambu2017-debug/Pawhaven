@@ -1,0 +1,60 @@
+import mongoose from "mongoose";
+
+const petSchema= new mongoose.Schema({
+    owner:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User",
+        required:true,
+    },
+    name:{
+        type:String,
+        required:true,
+        trim:true,
+    },
+    species:{
+        type:String,
+        required:true,
+        enum:["DOG","CAT","BIRD","RABBIT","OTHER"]
+    },
+    breed:{
+        type:String,
+        trim:true,
+        default:""
+    },
+    age:{
+        type:Number,
+        required:true,
+        min:0,
+    },
+    gender:{
+        type:String,
+        enum:["MALE","FEMALE","UNKNOWN"],
+        default:"UNKNOWN"
+    },
+    weight:{
+        type:Number,
+        min:0,
+    },
+    image:{
+        type:String,
+        default:"",
+    },
+    medicalNotes:{
+        type:String,
+        trim:true,
+        default:"",
+    },
+    vaccinationStatus:{
+        type:String,
+        enum:["UP_TO_DATE","PENDING","UNKNOWN"],
+        default:"UNKNOWN",
+    },
+    isActive:{
+        type:Boolean,
+        default:true,
+    },
+},{
+    timestamps:true,
+});
+const Pet=mongoose.model("Pet",petSchema);
+export default Pet;
