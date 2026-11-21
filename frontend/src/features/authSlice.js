@@ -45,7 +45,13 @@ export const logout = createAsyncThunk("auth/logout", async () => {
 const authSlice = createSlice({
   name: "auth",
   initialState: { user: null, status: "idle", error: null, checked: false },
-  reducers: { clearError: (s) => { s.error = null; } },
+  reducers: { clearError: (s) => { s.error = null; },  resetAuth: (s) => {
+    s.user = null;
+    s.error = null;
+    s.status = "idle";
+    s.checked = true;
+  }, },
+
   extraReducers: (b) => {
     b.addCase(fetchMe.fulfilled, (s, a) => { s.user = a.payload; s.checked = true; })
      .addCase(fetchMe.rejected, (s) => { s.user = null; s.checked = true; })
@@ -60,5 +66,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError } = authSlice.actions;
+export const { clearError,resetAuth} = authSlice.actions;
 export default authSlice.reducer;

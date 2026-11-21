@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,69 +7,131 @@ import Field from "../components/Field";
 import GoogleButton from "../components/GoogleButton";
 
 export default function Register() {
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
-  const [unlocked, setUnlocked] = useState(false);
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
 
-  const { status, error } = useSelector((s) => s.auth);
+  const { status, error } = useSelector((state) => state.auth);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [params] = useSearchParams();
 
-  const unlock = () => setUnlocked(true);
-
   const onChange = (e) => {
     dispatch(clearError());
-    setForm({ ...form, [e.target.name]: e.target.value });
+
+    const { name, value } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
+
+    dispatch(clearError());
+
     const res = await dispatch(register(form));
-    if (register.fulfilled.match(res)) navigate("/pets");
+
+    if (register.fulfilled.match(res)) {
+      navigate("/pets", { replace: true });
+    }
   };
 
   return (
     <div className="container py-5" style={{ maxWidth: 440 }}>
-      <form className="card border-0 shadow-sm p-4" onSubmit={onSubmit} autoComplete="off">
+      <form
+        className="card border-0 shadow-sm p-4"
+        onSubmit={onSubmit}
+        autoComplete="off"
+      >
         <h1 className="h3 mb-1">Create your account</h1>
-        <p className="text-body-secondary mb-3">Add your pet and book a stay in minutes.</p>
 
-        {error && <div className="alert alert-danger py-2" role="alert">{error}</div>}
+        <p className="text-body-secondary mb-3">
+          Add your pet and book a stay in minutes.
+        </p>
+
+        {/* Registration error */}
+        {error && (
+          <div className="alert alert-danger py-2" role="alert">
+            {error}
+          </div>
+        )}
+
+        {/* Google registration error */}
         {params.get("error") === "google" && (
           <div className="alert alert-danger py-2" role="alert">
             Google sign-up did not work. Please try again.
           </div>
         )}
 
-        {/* ---------- Sign up with Google ---------- */}
-        <GoogleButton label="Sign up with Google"  mode="register"/>
+        {/* Google sign-up */}
+        <GoogleButton
+          label="Sign up with Google"
+          mode="register"
+        />
 
+        {/* Divider */}
         <div className="d-flex align-items-center gap-2 my-3">
           <hr className="flex-grow-1 m-0" />
-          <span className="small text-body-secondary">or sign up with email</span>
+
+          <span className="small text-body-secondary">
+            or sign up with email
+          </span>
+
           <hr className="flex-grow-1 m-0" />
         </div>
 
+        {/* Full name */}
         <Field
-          label="Full name" id="name" autoComplete="off" minLength={2}
-          readOnly={!unlocked} onFocus={unlock}
-          value={form.name} onChange={onChange} required
-        />
-        <Field
-          label="Email" id="email" type="email" autoComplete="off"
-          readOnly={!unlocked} onFocus={unlock}
-          value={form.email} onChange={onChange} required
-        />
-        <Field
-          label="Password" id="password" type="password" autoComplete="new-password" minLength={6}
-          readOnly={!unlocked} onFocus={unlock}
-          value={form.password} onChange={onChange} required
+          label="Full name"
+          id="name"
+          autoComplete="name"
+          minLength={2}
+          value={form.name}
+          onChange={onChange}
+          required
         />
 
-        <button className="btn btn-primary w-100" disabled={status === "loading"}>
-          {status === "loading" ? "Creating..." : "Create account"}
+        {/* Email */}
+        <Field
+          label="Email"
+          id="email"
+          type="email"
+          autoComplete="email"
+          value={form.email}
+          onChange={onChange}
+          required
+        />
+
+        {/* Password */}
+        <Field
+          label="Password"
+          id="password"
+          type="password"
+          autoComplete="new-password"
+          minLength={6}
+          value={form.password}
+          onChange={onChange}
+          required
+        />
+
+        {/* Submit */}
+        <button
+          type="submit"
+          className="btn btn-primary w-100"
+          disabled={status === "loading"}
+        >
+          {status === "loading"
+            ? "Creating..."
+            : "Create account"}
         </button>
 
+        {/* Login link */}
         <p className="text-body-secondary mt-3 mb-0">
           Already registered? <Link to="/login">Log in</Link>
         </p>
